@@ -35,6 +35,11 @@ module Kubectl
       namespaces['items']
     end
 
+    def get_ingresses(namespace = Config.namespace, allow_failure: false)
+      ingresses = get_objects("ingress", namespace, allow_failure: allow_failure)
+      ingresses['items']
+    end
+
     def get_deployments(namespace = Config.namespace, allow_failure: false)
       deployments = get_objects("deploy", namespace, allow_failure: allow_failure)
       deployments['items']
@@ -75,7 +80,8 @@ module Kubectl
       run("label namespace #{namespace} #{key}=#{value}", allow_failure: allow_failure)
     end
 
-    def deploy(app_name:, filename:, namespace: Config.namespace, issuer: Config.issuer, allow_failure: false)
+    def deploy(app_name:, filename:, namespace: Config.namespace,
+        issuer: Config.lets_encrypt_issuer, tls_enabled: Config.lets_encrypt_enabled, allow_failure: false)
       # create tmp manifest dir & prepare new random filename
       FileUtils.mkdir_p("#{Config.tmp_path}/manifests/")
       tmp_filename = "#{Config.tmp_path}/manifests/#{random_name("manifest")}.yml"
@@ -86,6 +92,7 @@ module Kubectl
       data.gsub!('${DOMAIN}', Config.domain)
       data.gsub!('${NAMESPACE}', namespace)
       data.gsub!('${ISSUER}', issuer)
+      data.gsub!('${TLS_ENABLED}', tls_enabled.to_s)
       File.open(tmp_filename, "w") { |file| file.puts data }
 
       # deploy
@@ -95,7 +102,8 @@ module Kubectl
       FileUtils.rm_f(tmp_filename)
     end
 
-    def delete(app_name:, filename:, namespace: Config.namespace, issuer: Config.issuer, allow_failure: false)
+    def delete(app_name:, filename:, namespace: Config.namespace,
+        issuer: Config.lets_encrypt_issuer, tls_enabled: Config.lets_encrypt_enabled, allow_failure: false)
       # create tmp manifest dir & prepare new random filename
       FileUtils.mkdir_p("#{Config.tmp_path}/manifests/")
       tmp_filename = "#{Config.tmp_path}/manifests/#{random_name("manifest")}.yml"
@@ -106,6 +114,7 @@ module Kubectl
       data.gsub!('${DOMAIN}', Config.domain)
       data.gsub!('${NAMESPACE}', namespace)
       data.gsub!('${ISSUER}', issuer)
+      data.gsub!('${TLS_ENABLED}', tls_enabled.to_s)
       File.open(tmp_filename, "w") { |file| file.puts data }
 
       # deploy
