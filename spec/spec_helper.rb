@@ -6,7 +6,7 @@ require 'rest-client'
 require 'securerandom'
 require 'time'
 
-require_relative 'support/kube_client'
+require_relative 'support/kubectl'
 require_relative 'support/http'
 require_relative 'support/file'
 require_relative 'support/config'
@@ -16,8 +16,7 @@ RSpec.configure do |conf|
   include HttpHelpers
   include FileHelpers
   include UtilHelpers
-
-  include KubeClient # provides kubectl command running
+  include Kubectl # provides kubectl command running
 
   conf.filter_run focus: true
   conf.run_all_when_everything_filtered = true

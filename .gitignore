@@ -1,3 +1,11 @@
+config.yml
+
+artifact.txt
+artifact.bin
+*.sw?
+.DS_Store
+specs.out
+
 *.gem
 *.rbc
 /.config
@@ -9,6 +17,7 @@
 /test/tmp/
 /test/version_tmp/
 /tmp/
+/bin/
 
 # Used by dotenv library to load environment variables.
 # .env
@@ -40,6 +49,7 @@ build-iPhoneSimulator/
 
 ## Environment normalization:
 /.bundle/
+/vendor/ruby
 /vendor/bundle
 /lib/bundler/man/
 

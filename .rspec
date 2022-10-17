@@ -1,0 +1,4 @@
+--color --tty --format documentation
+--format documentation --out tmp/<%= ENV['SPEC'].to_s.empty? ? 'spec' : ENV['SPEC'] %>.log
+--format html --out tmp/<%= ENV['SPEC'].to_s.empty? ? 'spec' : ENV['SPEC'] %>_results.html
+--format RspecJunitFormatter --out tmp/<%= ENV['SPEC'].to_s.empty? ? 'spec' : ENV['SPEC'] %>_results.xml

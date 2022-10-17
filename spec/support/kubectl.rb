@@ -6,8 +6,8 @@ require 'yaml'
 require_relative 'command_runner'
 require_relative 'util'
 
-module KubeClient
-  class KUBE
+module Kubectl
+  class KUBECTL
     def initialize(command_runner: CommandRunner::Runner.new)
       @command_runner = command_runner
     end

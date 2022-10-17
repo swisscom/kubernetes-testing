@@ -12,9 +12,9 @@ module Config
   end
 
   def self.namespace
-    return 'kubernetes-testing' if @@config['test_namespace'] == nil
-    return 'kubernetes-testing' if @@config['test_namespace'].to_s.empty?
-    @@config['test_namespace']
+    return 'kubernetes-testing' if @@config['namespace'] == nil
+    return 'kubernetes-testing' if @@config['namespace'].to_s.empty?
+    @@config['namespace']
   end
 
   def self.domain

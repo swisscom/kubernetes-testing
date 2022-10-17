@@ -2,19 +2,19 @@
 
 require 'spec_helper'
 
-describe 'kube client', :client => true, :fast => true do
-  subject(:kube_client) do
-    KUBE.new()
+describe 'kubectl', :client => true, :fast => true do
+  subject(:kubectl) do
+    KUBECTL.new()
   end
 
   it 'can connect to the cluster' do
-    info = kube_client.cluster_info
+    info = kubectl.cluster_info
     expect(info).to include("Kubernetes master is running").or include("Kubernetes control plane is running at")
     expect(info).to include("CoreDNS is running")
   end
 
   it 'can list namespaces' do
-    namespaces = kube_client.get_namespaces
+    namespaces = kubectl.get_namespaces
     expect(namespaces).to_not be_nil
     expect(namespaces.count).to be > 10
 
