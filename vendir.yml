@@ -1,0 +1,16 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+minimumRequiredVersion: 0.23.0
+
+directories:
+- path: spec/support/letsencrypt-staging
+  contents:
+  - path: .
+    git:
+      url: https://github.com/letsencrypt/website
+      ref: b7a6a7bb2c9a1dcfe2be7bf18ffecf8e0ab97f73
+    includePaths:
+    - static/certs/staging/*
+    - LICENSE.txt
+    #newRootPath: static/certs/staging

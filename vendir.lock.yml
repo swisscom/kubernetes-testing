@@ -1,0 +1,9 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: Update Staging Environment Hierarchy (#1188)...
+      sha: b7a6a7bb2c9a1dcfe2be7bf18ffecf8e0ab97f73
+    path: .
+  path: spec/support/letsencrypt-staging
+kind: LockConfig
