@@ -48,7 +48,7 @@ module HttpHelpers
   def try_catch
     yield
   rescue RestClient::Exception => e
-    $stderr.puts e.response
+    # $stderr.puts e.response
     e.response
   end
 end

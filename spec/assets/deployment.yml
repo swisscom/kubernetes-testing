@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${APP_NAME}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APP_NAME}
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: ${APP_NAME}
+    app.kubernetes.io/component: ${NAMESPACE}
+    app.kubernetes.io/instance: ${APP_NAME}
+    app.kubernetes.io/name: ${APP_NAME}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APP_NAME}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: ${APP_NAME}
+      app.kubernetes.io/component: ${NAMESPACE}
+      app.kubernetes.io/instance: ${APP_NAME}
+      app.kubernetes.io/name: ${APP_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${APP_NAME}
+        app.kubernetes.io/component: ${NAMESPACE}
+        app.kubernetes.io/instance: ${APP_NAME}
+        app.kubernetes.io/name: ${APP_NAME}
+    spec:
+      serviceAccountName: ${APP_NAME}
+      securityContext:
+        fsGroup: 1007
+        runAsGroup: 1007
+        runAsUser: 1007
+      containers:
+      - name: app
+        image: index.docker.io/jamesclonk/docker-simple@sha256:4e166a1b20c0fe4690a591f50ba9aea5bd996c5a148d04007161c8c486cd77b5
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+        env:
+        - name: PORT
+          value: "8080"
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 50m
+            memory: 32Mi
