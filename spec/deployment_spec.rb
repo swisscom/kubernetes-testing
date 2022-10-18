@@ -5,11 +5,11 @@ require 'spec_helper'
 describe 'a kubernetes deployment', :deployment => true do
   before(:all) do
     @kubectl = KUBECTL.new()
+    @name = Config.random_names ? random_name('deployment') : 'test-deployment'
   end
 
   context 'when deployed' do
     before(:all) do
-      @name = Config.random_names ? random_name('deployment') : 'test-deployment'
       deploy = @kubectl.deploy(name: @name, filename: 'spec/assets/deployment.yml')
     end
     after(:all) do
@@ -88,7 +88,7 @@ describe 'a kubernetes deployment', :deployment => true do
               }
             end
 
-            it "can be https queried at [#{@name}.#{Config.domain}]" do
+            it "can be https queried via domain [#{Config.domain}]" do
               wait_until(120,15) {
                 response = https_get("https://#{@name}.#{Config.domain}/ingress")
                 expect(response).to_not be_nil
@@ -100,7 +100,7 @@ describe 'a kubernetes deployment', :deployment => true do
           end
 
         else # no lets-encrypt, let's just try with HTTP
-          it "can be http queried at [#{@name}.#{Config.domain}]" do
+          it "can be http queried via domain [#{Config.domain}]" do
             wait_until(120,15) {
               response = http_get("http://#{@name}.#{Config.domain}/ingress")
               expect(response).to_not be_nil
