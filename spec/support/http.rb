@@ -19,7 +19,7 @@ module HttpHelpers
   def https_get(url, args={})
     try_catch {
       if Config.lets_encrypt_staging
-        args.merge!(ssl_ca_path: 'spec/support/letsencrypt-staging/static/certs/staging')
+        args.merge!(ssl_ca_file: 'spec/support/letsencrypt-staging/static/certs/staging/letsencrypt-stg-root-x1.pem')
       end
       RestClient::Request.execute({ url: url, method: :get, verify_ssl: true }.merge(args))
     }

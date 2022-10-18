@@ -9,11 +9,11 @@ describe 'a kubernetes deployment', :deployment => true do
 
   context 'when deployed' do
     before(:all) do
-      @name = 'test-deployment'
-      deploy = @kubectl.deploy(app_name: @name, filename: 'spec/assets/deployment.yml')
+      @name = Config.random_names ? random_name('deployment') : 'test-deployment'
+      deploy = @kubectl.deploy(name: @name, filename: 'spec/assets/deployment.yml')
     end
     after(:all) do
-      delete = @kubectl.delete(app_name: @name, filename: 'spec/assets/deployment.yml')
+      delete = @kubectl.delete(name: @name, filename: 'spec/assets/deployment.yml')
 
       deployments = @kubectl.get_deployments
       expect(deployments).to_not include(@name)
@@ -51,10 +51,10 @@ describe 'a kubernetes deployment', :deployment => true do
     if Config.ingress_enabled
       context 'with an Ingress' do
         before(:all) do
-          deploy = @kubectl.deploy(app_name: @name, filename: 'spec/assets/ingress.yml')
+          deploy = @kubectl.deploy(name: @name, filename: 'spec/assets/ingress.yml')
         end
         after(:all) do
-          delete = @kubectl.delete(app_name: @name, filename: 'spec/assets/ingress.yml')
+          delete = @kubectl.delete(name: @name, filename: 'spec/assets/ingress.yml')
 
           ingresses = @kubectl.get_ingresses
           expect(ingresses).to_not include(@name)
@@ -64,7 +64,12 @@ describe 'a kubernetes deployment', :deployment => true do
           context 'with a valid certificate' do
             before(:all) do
               wait_until(240,15) {
-                certificate = @kubectl.get_object("cert", "#{@name}-tls")
+                certificates = @kubectl.get_certificates
+                expect(certificates).to_not be_nil
+                expect(certificates.count).to be >= 1
+
+                expect(certificates.any?{ |c| c['metadata']['name'] == "#{@name}-tls" }).to eq(true)
+                certificate = certificates.select{ |c| c['metadata']['name'] == "#{@name}-tls" }.first
 
                 expect(certificate['spec']).to_not be_nil
                 expect(certificate['spec']['dnsNames']).to_not be_nil
@@ -83,7 +88,7 @@ describe 'a kubernetes deployment', :deployment => true do
               }
             end
 
-            it "can be https queried via domain [#{Config.domain}]" do
+            it "can be https queried at [#{@name}.#{Config.domain}]" do
               wait_until(120,15) {
                 response = https_get("https://#{@name}.#{Config.domain}/ingress")
                 expect(response).to_not be_nil
@@ -95,7 +100,7 @@ describe 'a kubernetes deployment', :deployment => true do
           end
 
         else # no lets-encrypt, let's just try with HTTP
-          it "can be http queried via domain [#{Config.domain}]" do
+          it "can be http queried at [#{@name}.#{Config.domain}]" do
             wait_until(120,15) {
               response = http_get("http://#{@name}.#{Config.domain}/ingress")
               expect(response).to_not be_nil

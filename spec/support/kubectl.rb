@@ -35,6 +35,11 @@ module Kubectl
       namespaces['items']
     end
 
+    def get_certificates(namespace = Config.namespace, allow_failure: false)
+      ingresses = get_objects("certificate", namespace, allow_failure: allow_failure)
+      ingresses['items']
+    end
+
     def get_ingresses(namespace = Config.namespace, allow_failure: false)
       ingresses = get_objects("ingress", namespace, allow_failure: allow_failure)
       ingresses['items']
@@ -80,7 +85,7 @@ module Kubectl
       run("label namespace #{namespace} #{key}=#{value}", allow_failure: allow_failure)
     end
 
-    def deploy(app_name:, filename:, namespace: Config.namespace,
+    def deploy(name:, filename:, namespace: Config.namespace,
         issuer: Config.lets_encrypt_issuer, tls_enabled: Config.lets_encrypt_enabled, allow_failure: false)
       # create tmp manifest dir & prepare new random filename
       FileUtils.mkdir_p("#{Config.tmp_path}/manifests/")
@@ -88,7 +93,7 @@ module Kubectl
 
       # replace variables
       data = File.read(filename)
-      data.gsub!('${APP_NAME}', app_name)
+      data.gsub!('${NAME}', name)
       data.gsub!('${DOMAIN}', Config.domain)
       data.gsub!('${NAMESPACE}', namespace)
       data.gsub!('${ISSUER}', issuer)
@@ -102,7 +107,7 @@ module Kubectl
       FileUtils.rm_f(tmp_filename)
     end
 
-    def delete(app_name:, filename:, namespace: Config.namespace,
+    def delete(name:, filename:, namespace: Config.namespace,
         issuer: Config.lets_encrypt_issuer, tls_enabled: Config.lets_encrypt_enabled, allow_failure: false)
       # create tmp manifest dir & prepare new random filename
       FileUtils.mkdir_p("#{Config.tmp_path}/manifests/")
@@ -110,7 +115,7 @@ module Kubectl
 
       # replace variables
       data = File.read(filename)
-      data.gsub!('${APP_NAME}', app_name)
+      data.gsub!('${NAME}', name)
       data.gsub!('${DOMAIN}', Config.domain)
       data.gsub!('${NAMESPACE}', namespace)
       data.gsub!('${ISSUER}', issuer)

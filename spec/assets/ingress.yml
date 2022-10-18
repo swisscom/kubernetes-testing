@@ -6,21 +6,21 @@ metadata:
     cert-manager.io/cluster-issuer: ${ISSUER}
     ingress.kubernetes.io/force-ssl-redirect: "${TLS_ENABLED}"
     kubernetes.io/tls-acme: "${TLS_ENABLED}"
-  name: ${APP_NAME}
+  name: ${NAME}
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - ${APP_NAME}.${DOMAIN}
-    secretName: ${APP_NAME}-tls
+    - ${NAME}.${DOMAIN}
+    secretName: ${NAME}-tls
   rules:
-  - host: ${APP_NAME}.${DOMAIN}
+  - host: ${NAME}.${DOMAIN}
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: ${APP_NAME}
+            name: ${NAME}
             port:
               number: 80
