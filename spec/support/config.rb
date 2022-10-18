@@ -21,6 +21,11 @@ module Config
     @@config['domain']
   end
 
+  def self.random_names
+    return false if @@config['random_names'] == nil
+    @@config['random_names']
+  end
+
   def self.dashboard_enabled
     return true if @@config['dashboard'] == nil
     return true if @@config['dashboard']['enabled'] == nil
@@ -78,10 +83,7 @@ module Config
   end
 
   def self.lets_encrypt_staging
-    return false if @@config['lets_encrypt'] == nil
-    return false if @@config['lets_encrypt']['server'] == nil
-    return false if @@config['lets_encrypt']['server'].to_s.empty?
-    @@config['lets_encrypt']['server'] == "https://acme-staging-v02.api.letsencrypt.org/directory"
+    lets_encrypt_server == "https://acme-staging-v02.api.letsencrypt.org/directory"
   end
 
 end
