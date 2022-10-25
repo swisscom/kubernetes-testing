@@ -39,7 +39,7 @@ module Kubectl
     end
 
     def stop_pid(pid)
-      run("kill #{pid}")
+      command_runner.run("kill #{pid}")
     end
 
     def wait_for_deployment(deployment, wait_time = "120s", namespace = Config.namespace, allow_failure: false)
@@ -47,11 +47,16 @@ module Kubectl
     end
 
     def wait_for_daemonset(daemonset, wait_time = "120s", namespace = Config.namespace, allow_failure: false)
-      run("wait --for condition=available daemonset/#{daemonset} --timeout=#{wait_time} -n #{namespace}", allow_failure: allow_failure)
+      run("-n #{namespace} rollout status daemonset/#{daemonset} --timeout=#{wait_time} ", allow_failure: allow_failure)
     end
 
     def cluster_info(allow_failure: false)
       run("cluster-info", allow_failure: allow_failure)
+    end
+
+    def get_nodes(allow_failure: false)
+      nodes = get_objects("nodes", allow_failure: allow_failure)
+      nodes['items']
     end
 
     def get_namespaces(allow_failure: false)
