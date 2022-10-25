@@ -22,12 +22,41 @@ module Kubectl
       command_runner.run(run_cmd, allow_failure: allow_failure)
     end
 
+    def exec_command(pod, namespace = Config.namespace, allow_failure: false)
+      run("-n #{namespace} exec -it #{pod} -- /bin/bash -c '#{command}'", allow_failure: allow_failure)
+    end
+
+    def port_forward(target, local_port, target_port, namespace = Config.namespace)
+      #run("-n #{namespace} port-forward #{target} #{local_port}:#{target_port}", allow_failure: allow_failure)
+      pid = spawn("kubectl -n #{namespace} port-forward #{target} #{local_port}:#{target_port}")
+      Process.detach(pid)
+      pid
+    end
+
+    def stop_forward(target, local_port, target_port, namespace = Config.namespace)
+      pid = run("ps -ef | grep 'kubectl' | grep '#{namespace}' | grep '#{target}' | grep '#{local_port}:#{target_port}' | awk '{print $2;}'", allow_failure: false)
+      run("kill #{pid}")
+    end
+
+    def stop_pid(pid)
+      command_runner.run("kill #{pid}")
+    end
+
     def wait_for_deployment(deployment, wait_time = "120s", namespace = Config.namespace, allow_failure: false)
       run("wait --for condition=available deploy/#{deployment} --timeout=#{wait_time} -n #{namespace}", allow_failure: allow_failure)
     end
 
+    def wait_for_daemonset(daemonset, wait_time = "120s", namespace = Config.namespace, allow_failure: false)
+      run("-n #{namespace} rollout status daemonset/#{daemonset} --timeout=#{wait_time} ", allow_failure: allow_failure)
+    end
+
     def cluster_info(allow_failure: false)
       run("cluster-info", allow_failure: allow_failure)
+    end
+
+    def get_nodes(allow_failure: false)
+      nodes = get_objects("nodes", allow_failure: allow_failure)
+      nodes['items']
     end
 
     def get_namespaces(allow_failure: false)
