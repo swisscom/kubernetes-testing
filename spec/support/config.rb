@@ -61,6 +61,13 @@ module Config
     @@config['prometheus']['enabled']
   end
 
+  def self.loki_enabled
+    return true if @@config['loki'] == nil
+    return true if @@config['loki']['enabled'] == nil
+    return true if @@config['loki']['enabled'].to_s.empty?
+    @@config['loki']['enabled']
+  end
+
   def self.longhorn_enabled
     return true if @@config['longhorn'] == nil
     return true if @@config['longhorn']['enabled'] == nil
