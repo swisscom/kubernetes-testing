@@ -16,7 +16,7 @@ describe 'kubectl', :client => true, :fast => true do
   it 'can list namespaces' do
     namespaces = kubectl.get_namespaces
     expect(namespaces).to_not be_nil
-    expect(namespaces.count).to be > 10
+    expect(namespaces.count).to be > 1
 
     namespaces.map! { |namespace| namespace['metadata']['name'] }
     expect(namespaces).to include("kube-system", "default")
@@ -34,6 +34,10 @@ describe 'kubectl', :client => true, :fast => true do
     end
     if Config.prometheus_enabled
       expect(namespaces).to include("prometheus")
+    end
+    if Config.loki_enabled
+      expect(namespaces).to include("loki")
+      expect(namespaces).to include("promtail")
     end
     if Config.longhorn_enabled
       expect(namespaces).to include("longhorn-system")
