@@ -93,11 +93,10 @@ if Config.dashboard_enabled
 
       if Config.loki_enabled
         it "displays stateful sets" do
-          visit "https://dashboard.#{Config.domain}/#/statefulset/loki/loki?namespace=loki"
+          visit "https://dashboard.#{Config.domain}/#/statefulset?namespace=loki"
           wait_until(15,3) {
             expect(page).to have_content 'loki'
-            expect(page).to have_content 'app: loki'
-            expect(page).to have_content 'release: loki'
+            expect(page).to have_content 'app.kubernetes.io/instance: loki'
             expect(page).to have_content 'grafana/loki'
           }
         end
