@@ -51,10 +51,12 @@ describe 'a kubernetes deployment', :deployment => true do
     if Config.ingress_enabled
       context 'with an Ingress' do
         before(:all) do
-          deploy = @kubectl.deploy(name: @name, filename: 'spec/assets/ingress.yml')
+          @ingress_filename = 'spec/assets/ingress.yml'
+          @ingress_filename = 'spec/assets/ingress-http.yml' unless Config.lets_encrypt_enabled
+          deploy = @kubectl.deploy(name: @name, filename: @ingress_filename)
         end
         after(:all) do
-          delete = @kubectl.delete(name: @name, filename: 'spec/assets/ingress.yml')
+          delete = @kubectl.delete(name: @name, filename: @ingress_filename)
 
           ingresses = @kubectl.get_ingresses
           expect(ingresses).to_not include(@name)
