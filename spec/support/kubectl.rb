@@ -50,6 +50,10 @@ module Kubectl
       run("-n #{namespace} rollout status daemonset/#{daemonset} --timeout=#{wait_time} ", allow_failure: allow_failure)
     end
 
+    def wait_for_statefulset(statefulset, wait_time = "120s", namespace = Config.namespace, allow_failure: false)
+      run("-n #{namespace} rollout status statefulset/#{statefulset} --timeout=#{wait_time} ", allow_failure: allow_failure)
+    end
+
     def cluster_info(allow_failure: false)
       run("cluster-info", allow_failure: allow_failure)
     end
