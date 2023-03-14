@@ -47,19 +47,23 @@ if Config.loki_enabled
       end
 
       it "is ready" do
-        response = http_get("http://localhost:9091/ready")
-        expect(response).to_not be_nil
-        expect(response.code).to eq(200)
-        expect(response.headers[:content_type]).to include('text/plain')
-        expect(response.body).to include('ready')
+        wait_until(60,5) {
+          response = http_get("http://localhost:9091/ready")
+          expect(response).to_not be_nil
+          expect(response.code).to eq(200)
+          expect(response.headers[:content_type]).to include('text/plain')
+          expect(response.body).to include('ready')
+        }
       end
 
       it "has logs available for loki app" do
-        response = http_get("http://localhost:9091/loki/api/v1/query?query=%7Bapp%3D%22loki%22%7D")
-        expect(response).to_not be_nil
-        expect(response.code).to eq(200)
-        expect(response.headers[:content_type]).to include('application/json')
-        expect(response.body).to include('{"status":"success"')
+        wait_until(60,5) {
+          response = http_get("http://localhost:9091/loki/api/v1/query?query=%7Bapp%3D%22loki%22%7D")
+          expect(response).to_not be_nil
+          expect(response.code).to eq(200)
+          expect(response.headers[:content_type]).to include('application/json')
+          expect(response.body).to include('{"status":"success"')
+        }
       end
 
       context "when a new deployment is created" do
