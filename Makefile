@@ -16,6 +16,6 @@ fast:
 bundler: install package
 install:
 	bundle config set --local path 'vendor'
-	bundle install --local
+	bundle install
 package:
 	bundle package
