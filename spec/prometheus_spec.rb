@@ -38,9 +38,9 @@ if Config.prometheus_enabled
     end
 
     it "has running node-exporters" do
-      @kubectl.wait_for_daemonset('prometheus-node-exporter', "240s", 'prometheus')
+      @kubectl.wait_for_daemonset('prometheus-prometheus-node-exporter', "240s", 'prometheus')
       wait_until(120,15) {
-        pods = @kubectl.get_pods_by_label('app=prometheus,component=node-exporter', 'prometheus')
+        pods = @kubectl.get_pods_by_label('app.kubernetes.io/name=prometheus-node-exporter', 'prometheus')
         expect(pods).to_not be_nil
         expect(pods.count).to be >= 1
 
@@ -85,7 +85,7 @@ if Config.prometheus_enabled
         expect(response.headers[:content_type]).to include('application/json')
         expect(response.body).to eq('{"status":"success","data":[{"__name__":"up","instance":"localhost:9090","job":"prometheus"}]}')
 
-        response = http_get("http://localhost:9090/api/v1/query_range?query=up{app='prometheus',component='node-exporter'}&start=#{start_timestamp}&end=#{end_timestamp}&step=15s")
+        response = http_get("http://localhost:9090/api/v1/query_range?query=up{app_kubernetes_io_name=\"prometheus-node-exporter\"}&start=#{start_timestamp}&end=#{end_timestamp}&step=15s")
         expect(response).to_not be_nil
         expect(response.code).to eq(200)
         expect(response.headers[:content_type]).to include('application/json')
