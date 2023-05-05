@@ -2,19 +2,19 @@
 
 require 'spec_helper'
 
-if Config.longhorn_enabled
-  describe 'a kubernetes deployment with a persistent volume', :longhorn => true do
+if Config.vcloud_csi_enabled
+  describe 'a kubernetes deployment with a persistent volume', :vcloud_csi => true do
     before(:all) do
       @kubectl = KUBECTL.new()
       @name = Config.random_names ? random_name('deployment') : 'test-deployment'
     end
 
-    context 'when deployed using [longhorn] storage class' do
+    context 'when deployed using the [vcd-disk-dev] storage class' do
       before(:all) do
-        deploy = @kubectl.deploy(name: @name, filename: 'spec/assets/deployment-with-pvc.yml', storage_class: 'longhorn')
+        deploy = @kubectl.deploy(name: @name, filename: 'spec/assets/deployment-with-pvc.yml', storage_class: 'vcd-disk-dev')
       end
       after(:all) do
-        delete = @kubectl.delete(name: @name, filename: 'spec/assets/deployment-with-pvc.yml', storage_class: 'longhorn')
+        delete = @kubectl.delete(name: @name, filename: 'spec/assets/deployment-with-pvc.yml', storage_class: 'vcd-disk-dev')
 
         deployments = @kubectl.get_deployments
         expect(deployments).to_not include(@name)
@@ -70,8 +70,8 @@ if Config.longhorn_enabled
           expect(pvc['metadata']['name']).to eq(@name)
           expect(pvc['metadata']['annotations']['pv.kubernetes.io/bind-completed']).to eq("yes")
           expect(pvc['metadata']['annotations']['pv.kubernetes.io/bound-by-controller']).to eq("yes")
-          expect(pvc['metadata']['annotations']['volume.kubernetes.io/storage-provisioner']).to eq("driver.longhorn.io")
-          expect(pvc['spec']['storageClassName']).to eq("longhorn")
+          expect(pvc['metadata']['annotations']['volume.kubernetes.io/storage-provisioner']).to eq("named-disk.csi.cloud-director.vmware.com")
+          expect(pvc['spec']['storageClassName']).to eq("vcd-disk-dev")
           expect(pvc['status']['phase']).to eq("Bound")
         }
       end
@@ -89,10 +89,10 @@ if Config.longhorn_enabled
           pv = @kubectl.get_object("pv", pv_name)
           expect(pv).to_not be_nil
           expect(pv['metadata']['name']).to eq(pv_name)
-          expect(pv['metadata']['annotations']['pv.kubernetes.io/provisioned-by']).to eq("driver.longhorn.io")
-          expect(pv['spec']['storageClassName']).to eq("longhorn")
+          expect(pv['metadata']['annotations']['pv.kubernetes.io/provisioned-by']).to eq("named-disk.csi.cloud-director.vmware.com")
+          expect(pv['spec']['storageClassName']).to eq("vcd-disk-dev")
           expect(pv['spec']['claimRef']['name']).to eq(@name)
-          expect(pv['spec']['csi']['driver']).to eq("driver.longhorn.io")
+          expect(pv['spec']['csi']['driver']).to eq("named-disk.csi.cloud-director.vmware.com")
           expect(pv['spec']['csi']['volumeHandle']).to eq(pv_name)
           expect(pv['status']['phase']).to eq("Bound")
         }

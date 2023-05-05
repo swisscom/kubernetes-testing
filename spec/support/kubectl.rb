@@ -118,7 +118,7 @@ module Kubectl
       run("label namespace #{namespace} #{key}=#{value}", allow_failure: allow_failure)
     end
 
-    def deploy(name:, filename:, namespace: Config.namespace,
+    def deploy(name:, filename:, namespace: Config.namespace, storage_class: '',
         issuer: Config.lets_encrypt_issuer, tls_enabled: Config.lets_encrypt_enabled, allow_failure: false)
       # create tmp manifest dir & prepare new random filename
       FileUtils.mkdir_p("#{Config.tmp_path}/manifests/")
@@ -129,6 +129,7 @@ module Kubectl
       data.gsub!('${NAME}', name)
       data.gsub!('${DOMAIN}', Config.domain)
       data.gsub!('${NAMESPACE}', namespace)
+      data.gsub!('${STORAGE_CLASS}', storage_class)
       data.gsub!('${ISSUER}', issuer)
       data.gsub!('${TLS_ENABLED}', tls_enabled.to_s)
       File.open(tmp_filename, "w") { |file| file.puts data }
@@ -140,7 +141,7 @@ module Kubectl
       FileUtils.rm_f(tmp_filename)
     end
 
-    def delete(name:, filename:, namespace: Config.namespace,
+    def delete(name:, filename:, namespace: Config.namespace, storage_class: '',
         issuer: Config.lets_encrypt_issuer, tls_enabled: Config.lets_encrypt_enabled, allow_failure: false)
       # create tmp manifest dir & prepare new random filename
       FileUtils.mkdir_p("#{Config.tmp_path}/manifests/")
@@ -151,6 +152,7 @@ module Kubectl
       data.gsub!('${NAME}', name)
       data.gsub!('${DOMAIN}', Config.domain)
       data.gsub!('${NAMESPACE}', namespace)
+      data.gsub!('${STORAGE_CLASS}', storage_class)
       data.gsub!('${ISSUER}', issuer)
       data.gsub!('${TLS_ENABLED}', tls_enabled.to_s)
       File.open(tmp_filename, "w") { |file| file.puts data }

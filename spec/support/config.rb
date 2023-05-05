@@ -26,6 +26,13 @@ module Config
     @@config['random_names']
   end
 
+  def self.deployment_enabled
+    return true if @@config['deployment'] == nil
+    return true if @@config['deployment']['enabled'] == nil
+    return true if @@config['deployment']['enabled'].to_s.empty?
+    @@config['deployment']['enabled']
+  end
+
   def self.dashboard_enabled
     return true if @@config['dashboard'] == nil
     return true if @@config['dashboard']['enabled'] == nil
@@ -73,6 +80,20 @@ module Config
     return true if @@config['longhorn']['enabled'] == nil
     return true if @@config['longhorn']['enabled'].to_s.empty?
     @@config['longhorn']['enabled']
+  end
+
+  def self.vcloud_csi_enabled
+    return true if @@config['vcloud_csi'] == nil
+    return true if @@config['vcloud_csi']['enabled'] == nil
+    return true if @@config['vcloud_csi']['enabled'].to_s.empty?
+    @@config['vcloud_csi']['enabled']
+  end
+
+  def self.storage_enabled
+    return true if @@config['storage'] == nil
+    return true if @@config['storage']['enabled'] == nil
+    return true if @@config['storage']['enabled'].to_s.empty?
+    @@config['storage']['enabled']
   end
 
   def self.lets_encrypt_issuer
