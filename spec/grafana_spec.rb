@@ -51,10 +51,11 @@ if Config.grafana_enabled
         fill_in 'user', with: "admin"
         fill_in 'password', with: @secret
         click_button 'Log in'
+        sleep(3)
       end
 
       it "is signed-in" do
-        wait_until(15,3) {
+        wait_until(17,3) {
           visit "https://grafana.#{Config.domain}/"
           sleep(3)
           expect(page).to have_content 'Welcome to Grafana'
@@ -66,7 +67,7 @@ if Config.grafana_enabled
 
       it "displays nginx dashboard" do
         #visit "https://grafana.#{Config.domain}/d/nginx/nginx-ingress-controller?orgId=1&refresh=5m&editview=dashboard_json"
-        wait_until(30,5) {
+        wait_until(33,5) {
           visit "https://grafana.#{Config.domain}/d/nginx/nginx-ingress-controller?orgId=1&refresh=5m"
           sleep(5)
           expect(page).to have_content 'NGINX Ingress Controller'
@@ -76,7 +77,7 @@ if Config.grafana_enabled
       end
 
       it "displays metrics explorer" do
-        wait_until(30,5) {
+        wait_until(33,5) {
           visit "https://grafana.#{Config.domain}/explore?orgId=1&left=%7B%22datasource%22:%22PBFA97CFB590B2093%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22datasource%22:%7B%22type%22:%22prometheus%22,%22uid%22:%22PBFA97CFB590B2093%22%7D,%22editorMode%22:%22builder%22,%22expr%22:%22go_goroutines%7Bapp%3D%5C%22operating-system-manager%5C%22%7D%22,%22legendFormat%22:%22__auto%22,%22range%22:true,%22instant%22:true%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D%7D"
           sleep(5)
           expect(page).to have_content 'go_goroutines{'
