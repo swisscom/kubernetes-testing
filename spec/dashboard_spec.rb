@@ -107,11 +107,11 @@ if Config.dashboard_enabled
           visit "https://dashboard.#{Config.domain}/#/service?namespace=prometheus"
           wait_until(15,3) {
             expect(page).to have_content 'Internal Endpoints'
+            expect(page).to have_content 'app.kubernetes.io/instance: prometheus'
             expect(page).to have_content 'prometheus-server.prometheus:'
             expect(page).to have_content 'prometheus-alertmanager.prometheus:'
             expect(page).to have_content 'prometheus-node-exporter.prometheus:'
             expect(page).to have_content 'prometheus-kube-state-metrics.prometheus:'
-            expect(page).to have_content 'app: prometheus'
             expect(page).to have_content 'ClusterIP'
           }
         end
