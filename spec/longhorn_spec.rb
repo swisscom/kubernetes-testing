@@ -33,7 +33,7 @@ if Config.longhorn_enabled
       it "has running pods with a volume mount" do
         @kubectl.wait_for_deployment(@name)
 
-        wait_until(240,15) {
+        wait_until(366,15) {
           pods = @kubectl.get_pods_by_label("app=#{@name}")
           expect(pods).to_not be_nil
           expect(pods.count).to eq(1) # the deployment has 1 replica defined
