@@ -25,8 +25,9 @@ if Config.dashboard_enabled
     end
 
     it "can be https queried at [dashboard.#{Config.domain}] and displays the OAuth2 login page" do
-      visit "https://dashboard.#{Config.domain}/"
       wait_until(15,3) {
+        visit "https://dashboard.#{Config.domain}/"
+        sleep(3)
         expect(page).to have_content 'Log in to Your Account'
         expect(page).to have_content 'Email Address'
       }

@@ -61,8 +61,9 @@ if Config.prometheus_enabled
     end
 
     it "can be https queried at [prometheus.#{Config.domain}] and displays the OAuth2 login page" do
-      visit "https://prometheus.#{Config.domain}/"
       wait_until(15,3) {
+        visit "https://prometheus.#{Config.domain}/"
+        sleep(3)
         expect(page).to have_content 'Log in to Your Account'
         expect(page).to have_content 'Email Address'
       }
