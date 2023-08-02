@@ -23,34 +23,24 @@ if Config.grafana_enabled
   describe 'grafana', :grafana => true, type: :feature, js: true do
     before(:all) do
       @kubectl = KUBECTL.new()
-      @secret = Base64.decode64(@kubectl.run("-n grafana get secret grafana -o jsonpath='{.data.admin-password}'"))
-      # @secret = `kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo`
     end
 
-    it "can be https queried at [grafana.#{Config.domain}]" do
-      response = https_get("https://grafana.#{Config.domain}")
-      expect(response.code).to eq(200)
-      expect(response.headers[:content_type]).to include('text/html')
-      expect(response.body).to include('<title>Grafana</title>')
-      expect(response.body).to include('<div class="preloader__text">Loading Grafana</div>','checkBrowserCompatibility')
+    it "can be https queried at [grafana.#{Config.domain}] and displays the OAuth2 login page" do
+      visit "https://grafana.#{Config.domain}/"
+      wait_until(15,3) {
+        expect(page).to have_content 'Log in to Your Account'
+        expect(page).to have_content 'Email Address'
+      }
     end
-
-      it "displays the login page" do
-        visit "https://grafana.#{Config.domain}/"
-        wait_until(15,3) {
-          expect(page).to have_content 'Welcome to Grafana'
-          expect(page).to have_content 'Forgot your password?'
-        }
-      end
 
     context "when logging in" do
       before(:each) do
         visit "https://grafana.#{Config.domain}/"
-        expect(find_field(name: 'user').value).to eq("")
+        expect(find_field(name: 'login').value).to eq("")
         expect(find_field(name: 'password').value).to eq("")
-        fill_in 'user', with: "admin"
-        fill_in 'password', with: @secret
-        click_button 'Log in'
+        fill_in 'login', with: Config.admin_username
+        fill_in 'password', with: Config.admin_password
+        click_button 'Login'
         sleep(3)
       end
 

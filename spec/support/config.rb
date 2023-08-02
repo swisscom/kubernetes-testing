@@ -21,6 +21,20 @@ module Config
     @@config['domain']
   end
 
+  def self.admin_username
+    return "admin" if @@config['admin'] == nil
+    return "admin" if @@config['admin']['username'] == nil
+    return "admin" if @@config['admin']['username'].to_s.empty?
+    @@config['admin']['username']
+  end
+
+  def self.admin_password
+    return "password" if @@config['admin'] == nil
+    return "password" if @@config['admin']['password'] == nil
+    return "password" if @@config['admin']['password'].to_s.empty?
+    @@config['admin']['password']
+  end
+
   def self.random_names
     return false if @@config['random_names'] == nil
     @@config['random_names']

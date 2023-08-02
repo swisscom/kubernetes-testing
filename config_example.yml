@@ -4,3 +4,11 @@ domain: k8s.my-domain.com
 
 # random deployment/app names
 random_names: true
+
+# lets_encrypt:
+#   server: https://acme-staging-v02.api.letsencrypt.org/directory
+
+# admin credentials for dex/oauth2-proxy secured components
+admin:
+  username: admin@domain
+  password: abcdefg1234567890

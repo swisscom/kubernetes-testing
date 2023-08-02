@@ -60,6 +60,14 @@ if Config.prometheus_enabled
       }
     end
 
+    it "can be https queried at [prometheus.#{Config.domain}] and displays the OAuth2 login page" do
+      visit "https://prometheus.#{Config.domain}/"
+      wait_until(15,3) {
+        expect(page).to have_content 'Log in to Your Account'
+        expect(page).to have_content 'Email Address'
+      }
+    end
+
     context "when port-forwarding from localhost to [service/prometheus-server]" do
       before(:each) do
         @forward_pid = @kubectl.port_forward('service/prometheus-server',9090,80,'prometheus')
