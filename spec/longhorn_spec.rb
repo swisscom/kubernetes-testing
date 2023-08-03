@@ -1,9 +1,25 @@
 # frozen_string_literal: true
 
+require 'capybara'
+require 'capybara/rspec'
+require 'selenium/webdriver'
 require 'spec_helper'
 
 if Config.longhorn_enabled
-  describe 'a kubernetes deployment with a persistent volume', :longhorn => true do
+  Capybara.default_driver = :headless_chrome
+  Capybara.javascript_driver = :headless_chrome
+  Capybara.register_driver :headless_chrome do |app|
+    browser_options = Selenium::WebDriver::Chrome::Options.new
+    browser_options.add_argument('allow-insecure-localhost')  # Ignore TLS/SSL errors on localhost
+    browser_options.add_argument('ignore-certificate-errors') # Ignore certificate related errors
+    browser_options.add_argument('headless')
+    browser_options.add_argument('disable-gpu')
+    browser_options.add_argument('disable-dev-shm-usage')
+    browser_options.add_argument('no-sandbox')
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+  end
+
+  describe 'a kubernetes deployment with a persistent volume', :longhorn => true, type: :feature, js: true do
     before(:all) do
       @kubectl = KUBECTL.new()
       @name = Config.random_names ? random_name('deployment') : 'test-deployment'
@@ -18,6 +34,44 @@ if Config.longhorn_enabled
         expect(response.body).to include('<title>dex</title>')
         expect(response.body).to include('Log in to')
       }
+    end
+
+    context "when logging in to [longhorn.#{Config.domain}]" do
+      before(:each) do
+        visit "https://longhorn.#{Config.domain}/"
+        click_button 'Log in with Email'
+        sleep(2)
+        expect(find_field(name: 'login').value).to eq("")
+        expect(find_field(name: 'password').value).to eq("")
+        fill_in 'login', with: Config.admin_username
+        fill_in 'password', with: Config.admin_password
+        click_button 'Login'
+        sleep(2)
+      end
+
+      it "is signed-in" do
+        wait_until(17,3) {
+          visit "https://longhorn.#{Config.domain}/#/dashboard"
+          sleep(3)
+          expect(page).to have_content 'Dashboard'
+          expect(page).to have_content 'Healthy'
+          expect(page).to have_content 'Degraded'
+          expect(page).to have_content 'Schedulable'
+          expect(page).to have_content 'Reserved'
+          expect(page).to have_content 'Event Log'
+        }
+      end
+
+      it "displays nodes" do
+        wait_until(17,3) {
+          visit "https://longhorn.#{Config.domain}/#/node"
+          sleep(3)
+          expect(page).to have_content 'Schedulable'
+          expect(page).to have_content 'Readiness'
+          expect(page).to have_content 'Allocated'
+          expect(page).to have_content 'worker-pool'
+        }
+      end
     end
 
     context 'when deployed using [longhorn] storage class' do

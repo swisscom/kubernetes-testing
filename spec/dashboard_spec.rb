@@ -38,12 +38,14 @@ if Config.dashboard_enabled
     context "when logging in first with OAuth2" do
       before(:each) do
         visit "https://dashboard.#{Config.domain}/"
+        click_button 'Log in with Email'
+        sleep(2)
         expect(find_field(name: 'login').value).to eq("")
         expect(find_field(name: 'password').value).to eq("")
         fill_in 'login', with: Config.admin_username
         fill_in 'password', with: Config.admin_password
         click_button 'Login'
-        sleep(3)
+        sleep(2)
       end
 
       it "is signed-in" do
