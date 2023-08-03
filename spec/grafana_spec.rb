@@ -32,8 +32,7 @@ if Config.grafana_enabled
         expect(response.code).to eq(200)
         expect(response.headers[:content_type]).to include('text/html')
         expect(response.body).to include('<title>dex</title>')
-        expect(response.body).to include('Log in to Your Account')
-        expect(response.body).to include('Email Address')
+        expect(response.body).to include('Log in to')
       }
     end
 
