@@ -61,6 +61,13 @@ module Config
     @@config['grafana']['enabled']
   end
 
+  def self.hubble_enabled
+    return true if @@config['hubble'] == nil
+    return true if @@config['hubble']['enabled'] == nil
+    return true if @@config['hubble']['enabled'].to_s.empty?
+    @@config['hubble']['enabled']
+  end
+
   def self.ingress_enabled
     return true if @@config['ingress'] == nil
     return true if @@config['ingress']['enabled'] == nil
