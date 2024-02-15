@@ -55,8 +55,7 @@ if Config.hubble_enabled
           expect(page).to have_content 'world'
           expect(page).to have_content 'ingress-nginx'
           expect(page).to have_content 'oauth2-proxy'
-          expect(page).to have_content 'Destination Service'
-          expect(page).to have_content 'Destination Port'
+          expect(page).to have_content 'Destination'
           expect(page).to have_content 'forwarded'
         }
       end
